@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # Clé secrète simple pour éviter que n'importe qui spamme ton service.
 # Change cette valeur et mets la MÊME valeur côté PHP.
-API_KEY = "change-moi-en-quelque-chose-de-long-et-secret"
+API_KEY = "pouetpouet123"
 
 
 @app.route("/transcribe", methods=["POST"])
