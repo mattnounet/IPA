@@ -85,7 +85,7 @@ def transcribe():
                 ipa_lines.append("")
                 continue
             result = subprocess.run(
-                ["espeak-ng", "-v", lang, "-q", "--ipa=1"],
+                ["espeak-ng", "-v", lang, "-q", "--ipa"],
                 input=line,
                 capture_output=True,
                 text=True,
