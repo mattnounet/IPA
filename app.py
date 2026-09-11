@@ -78,22 +78,27 @@ def transcribe():
         detected_iso, lang = detect_language(text)
 
     try:
-        result = subprocess.run(
-            ["espeak-ng", "-v", lang, "-q", "--ipa"],
-            input=text,
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
+        lines = text.split("\n")
+        ipa_lines = []
+        for line in lines:
+            if line.strip() == "":
+                ipa_lines.append("")
+                continue
+            result = subprocess.run(
+                ["espeak-ng", "-v", lang, "-q", "--ipa"],
+                input=line,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            if result.returncode != 0:
+                return jsonify({"error": "espeak-ng failed", "details": result.stderr.strip()}), 500
+            ipa_lines.append(result.stdout.strip())
+        ipa = "\n".join(ipa_lines)
     except subprocess.TimeoutExpired:
         return jsonify({"error": "transcription timed out"}), 504
     except FileNotFoundError:
         return jsonify({"error": "espeak-ng not found on server"}), 500
-
-    if result.returncode != 0:
-        return jsonify({"error": "espeak-ng failed", "details": result.stderr.strip()}), 500
-
-    ipa = result.stdout.strip()
 
     response = {
         "text": text,
