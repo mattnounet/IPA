@@ -93,7 +93,12 @@ def transcribe():
             )
             if result.returncode != 0:
                 return jsonify({"error": "espeak-ng failed", "details": result.stderr.strip()}), 500
-            ipa_lines.append(result.stdout.strip())
+            # eSpeak-NG insère ses propres retours à la ligne à chaque pause
+            # (virgule, point...). On les remplace par un espace pour ne
+            # garder que les retours à la ligne voulus par l'utilisateur.
+            clause_output = result.stdout.strip().replace("\n", " ")
+            clause_output = " ".join(clause_output.split())
+            ipa_lines.append(clause_output)
         ipa = "\n".join(ipa_lines)
     except subprocess.TimeoutExpired:
         return jsonify({"error": "transcription timed out"}), 504
